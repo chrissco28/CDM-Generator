@@ -8,7 +8,6 @@ Intructions:
 4) Save the JSON. The JSON file will use the entity name provided to the directory where the CDM Generator is running.
 
 
-Limitations/Notes:
+Notes:
 - For CSV files All columns default all data types to strings.
 - For CSV files Special characters, spaces, etc. are removed from the column names. Alphanumeric values are use for column names.
-- Parquet files do not display dates
