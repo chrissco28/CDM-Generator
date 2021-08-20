@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using Parquet.Data;
 using Parquet;
+using DataColumn = System.Data.DataColumn;
 
 namespace CDM_Generator
 {
@@ -22,6 +23,7 @@ namespace CDM_Generator
     {
         string fileName = string.Empty;
         string fileExtension = string.Empty;
+        DataTable fileStructure = new DataTable();
 
         public Main()
         {
@@ -52,7 +54,7 @@ namespace CDM_Generator
                     int length = openFileDialog.SafeFileName.Length;
 
                     fileName = openFileDialog.SafeFileName.Substring(0, index).ToLower();
-                    fileExtension = openFileDialog.SafeFileName.Substring(length - index, index).ToLower();
+                    fileExtension = openFileDialog.SafeFileName.Substring(index+1).ToLower();
                     txtEntityName.Text = fileName;
                 }
             }
@@ -63,6 +65,26 @@ namespace CDM_Generator
             try
             {
                 ReadCSV csv = new ReadCSV(fileName);
+
+                if (dataGridView.Columns.Count > 0)
+                {
+                    ClearTables();
+                }
+
+                //get the first row of the results to get the file structure
+                for (int i = 0; i < csv.readCSV.Columns.Count; i++)
+                {
+                    System.Data.DataColumn col = new System.Data.DataColumn(csv.readCSV.Columns[i].ColumnName, typeof(string));
+                    fileStructure.Columns.Add(col);
+                }
+                //add a second row and populate with data type
+                DataRow dataRow = fileStructure.NewRow();
+
+                for (int k = 0; k < csv.readCSV.Columns.Count; k++)
+                {
+                    dataRow[k] = "string";
+                }
+                fileStructure.Rows.Add(dataRow);
 
                 try
                 {
@@ -170,7 +192,7 @@ namespace CDM_Generator
                         }
                     }
                 }
-
+                
                 return result;
             }
         }
@@ -188,21 +210,35 @@ namespace CDM_Generator
                     DataField[] dataFields = parquetReader.Schema.GetDataFields();
                     dataGridView.ColumnCount = dataFields.Length;
                     //System.Diagnostics.Debug.WriteLine(dataFields[k].IsArray);
+                    
+                    if (fileStructure.Columns.Count > 0)
+                    {
+                        fileStructure.Rows.Clear();
+                        fileStructure.Columns.Clear();
+                    }
 
                     //add the columns as names
                     for (int k=0; k< dataFields.Length;k++)
                     {
-                        dataGridView.Columns[k].Name = dataFields[k].Name;
+                      //  dataGridView.Columns[k].Name = dataFields[k].Name;
+
+                        System.Data.DataColumn col = new System.Data.DataColumn(dataFields[k].Name, typeof(string));
+                        fileStructure.Columns.Add(col);
+
                         System.Diagnostics.Debug.WriteLine(dataFields[k].DataType);
                         
                     }
                     //add a second row and populate with data type
-                    DataGridViewRow row = (DataGridViewRow)dataGridView.Rows[0].Clone();
+                    //DataGridViewRow row = (DataGridViewRow)dataGridView.Rows[0].Clone();
+                    DataRow dataRow = fileStructure.NewRow();
+
                     for (int k = 0; k < dataFields.Length; k++)
                     {
-                        row.Cells[k].Value = dataFields[k].DataType;
+                      //  row.Cells[k].Value = dataFields[k].DataType;
+                        dataRow[k] = dataFields[k].DataType;
                     }
-                    dataGridView.Rows.Add(row);
+                    //dataGridView.Rows.Add(row);
+                    fileStructure.Rows.Add(dataRow);
 
                     /*
                     // enumerate through row groups in this file
@@ -230,6 +266,7 @@ namespace CDM_Generator
 
         private void btnLoadFile_Click(object sender, EventArgs e)
         {
+           
             if (txtFilePath.Text.Length > 0)
             {
                 if (fileExtension == "csv")
@@ -261,23 +298,17 @@ namespace CDM_Generator
            
             int i = 0;
             string columnName = string.Empty;
+            string dataType = string.Empty;
             
            
             //get the header rows from the data grid and append them to the JSON
-            while(i < dataGridView.Columns.Count)
+            while(i < fileStructure.Columns.Count)
             {
-                columnName = dataGridView.Columns[i].HeaderText;
-                if (fileExtension == "csv")
-                {
-                    JSON.Append("{'name':'" + columnName + "','dataFormat':'String'},");
-                }
-                if (fileExtension == "parquet")
-                {
-                    if (dataGridView.Rows[0].Cells[i].Value != null)
-                    { 
-                        JSON.Append("{'name':'" + columnName + "','dataFormat':'" + dataGridView.Rows[0].Cells[i].Value.ToString()+ "'},");
-                    }
-                }
+                columnName = fileStructure.Columns[i].ColumnName;
+                dataType = fileStructure.Rows[0][i].ToString();
+                
+                JSON.Append("{'name':'" + columnName + "','dataFormat':'" + dataType + "'},");
+                
                 i++;
             }
             
@@ -331,5 +362,13 @@ namespace CDM_Generator
         {
             this.Text = "CDM Generator (" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + ")";
         }
+
+        private void ClearTables()
+        {
+            fileStructure.Rows.Clear();
+            fileStructure.Columns.Clear();
+
+        }
+
     }
 }
