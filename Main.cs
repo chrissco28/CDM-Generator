@@ -105,16 +105,7 @@ namespace CDM_Generator
         {
             try
             {
-                ReadParquet(fileName);
-
-                try
-                {
-                    //dataGridView.DataSource = csv.readCSV;
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
+                dataGridView.DataSource = ReadParquet(fileName);
             }
             catch (Exception ex)
             {
@@ -197,8 +188,13 @@ namespace CDM_Generator
             }
         }
 
-        private void ReadParquet(string fileName)
+        private DataTable ReadParquet(string fileName)
         {
+
+            DataTable results = new DataTable();
+            long maxRowCount = 50;
+            long maxGroupCount = 1;
+
             // open file stream
             using (Stream fileStream = System.IO.File.OpenRead(fileName))
             {
@@ -208,8 +204,6 @@ namespace CDM_Generator
                     // get file schema (available straight after opening parquet reader)
                     // however, get only data fields as only they contain data values
                     DataField[] dataFields = parquetReader.Schema.GetDataFields();
-                    dataGridView.ColumnCount = dataFields.Length;
-                    //System.Diagnostics.Debug.WriteLine(dataFields[k].IsArray);
                     
                     if (fileStructure.Columns.Count > 0)
                     {
@@ -220,29 +214,24 @@ namespace CDM_Generator
                     //add the columns as names
                     for (int k=0; k< dataFields.Length;k++)
                     {
-                      //  dataGridView.Columns[k].Name = dataFields[k].Name;
-
                         System.Data.DataColumn col = new System.Data.DataColumn(dataFields[k].Name, typeof(string));
                         fileStructure.Columns.Add(col);
-
-                        System.Diagnostics.Debug.WriteLine(dataFields[k].DataType);
-                        
                     }
-                    //add a second row and populate with data type
-                    //DataGridViewRow row = (DataGridViewRow)dataGridView.Rows[0].Clone();
-                    DataRow dataRow = fileStructure.NewRow();
 
+                    //copy the column names from the structure to the data results
+                    results = fileStructure.Clone();
+
+                    //add a second row and populate with data type
+                    DataRow dataRow = fileStructure.NewRow();
+                    
                     for (int k = 0; k < dataFields.Length; k++)
                     {
-                      //  row.Cells[k].Value = dataFields[k].DataType;
                         dataRow[k] = dataFields[k].DataType;
                     }
-                    //dataGridView.Rows.Add(row);
                     fileStructure.Rows.Add(dataRow);
 
-                    /*
                     // enumerate through row groups in this file
-                    for (int i = 0; i < parquetReader.RowGroupCount; i++)
+                    for (int i = 0; i < maxGroupCount; i++)
                     {
                         // create row group reader
                         using (Parquet.ParquetRowGroupReader groupReader = parquetReader.OpenRowGroupReader(i))
@@ -251,17 +240,55 @@ namespace CDM_Generator
                             // required columns if you need to.
                             Parquet.Data.DataColumn[] columns = dataFields.Select(groupReader.ReadColumn).ToArray();
 
-                           // get first column, for instance
-                            Parquet.Data.DataColumn firstColumn = columns[0];
+                            //go through each row and then column, limit to the first 5K records.
+                            if (groupReader.RowCount < maxRowCount)
+                                maxRowCount = groupReader.RowCount;
 
-                            // .Data member contains a typed array of column data you can cast to the type of the column
-                            Array data = firstColumn.Data;
-                            int[] ids = (int[])data;
+                             for (int a = 0; a < maxRowCount; a++)
+                             {
+                               // DataRow row = results.NewRow();
+                                object[] array = new object[columns.Length];
+
+                                for (int k = 0; k< columns.Length; k++)
+                                {
+
+                                    Parquet.Data.DataColumn cols = columns[k];
+                             
+                                    // .Data member contains a typed array of column data you can cast to the type of the column
+                                    Array data = cols.Data;
+                                    try
+                                    {
+                                        if (data != null)
+                                        {
+                                            if (cols.Field.DataType == DataType.DateTimeOffset)
+                                            {
+                                                //DateTimeOffset[]value = (DateTimeOffset[])data;
+                                                array[k] = null;
+                                            }
+                                            else
+                                            {
+                                                string[] value = (string[])data;
+                                                if (value[k] != null)
+                                                    array[k] = value[k].ToString();
+                                            }
+                                            
+                                        }
+                                    }
+                                    catch(Exception ex)
+                                    {
+                                        System.Diagnostics.Debug.WriteLine(ex.Message);
+                                    }
+                                }
+
+                                //add the row to the results table
+                                results.Rows.Add(array);
+                            }
                         }
-                       
-                    } */
+                    } 
                 }
             }
+
+            return results;
         }
 
         private void btnLoadFile_Click(object sender, EventArgs e)
