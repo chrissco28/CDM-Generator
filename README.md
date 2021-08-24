@@ -9,6 +9,7 @@ Intructions:
 
 
 Settings:
+
 Under the Settings menu, select Options for the following configurations:
   - Alphanumeric Attributes (CSV only) - Removes any special characters, spaces, etc. from the column names and leaves only alphanumeric values are use for column names.
   - Infer Data Types (CSV only) - CDM Generator will sample values in each column to test data types (Int, Decimal, and DateTime). Any values that do not parse correctly will default to string.
