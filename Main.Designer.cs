@@ -40,12 +40,17 @@ namespace CDM_Generator
             this.btnLoadFile = new System.Windows.Forms.Button();
             this.lblEntityName = new System.Windows.Forms.Label();
             this.txtEntityName = new System.Windows.Forms.TextBox();
+            this.btnCopy = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnJSON
             // 
-            this.btnJSON.Location = new System.Drawing.Point(654, 692);
+            this.btnJSON.Location = new System.Drawing.Point(653, 715);
             this.btnJSON.Name = "btnJSON";
             this.btnJSON.Size = new System.Drawing.Size(125, 34);
             this.btnJSON.TabIndex = 0;
@@ -55,14 +60,14 @@ namespace CDM_Generator
             // 
             // txtFilePath
             // 
-            this.txtFilePath.Location = new System.Drawing.Point(134, 21);
+            this.txtFilePath.Location = new System.Drawing.Point(134, 42);
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.Size = new System.Drawing.Size(497, 31);
             this.txtFilePath.TabIndex = 2;
             // 
             // btnSelectFile
             // 
-            this.btnSelectFile.Location = new System.Drawing.Point(654, 21);
+            this.btnSelectFile.Location = new System.Drawing.Point(653, 40);
             this.btnSelectFile.Name = "btnSelectFile";
             this.btnSelectFile.Size = new System.Drawing.Size(125, 34);
             this.btnSelectFile.TabIndex = 3;
@@ -73,7 +78,7 @@ namespace CDM_Generator
             // lblFilePath
             // 
             this.lblFilePath.AutoSize = true;
-            this.lblFilePath.Location = new System.Drawing.Point(15, 21);
+            this.lblFilePath.Location = new System.Drawing.Point(15, 42);
             this.lblFilePath.Name = "lblFilePath";
             this.lblFilePath.Size = new System.Drawing.Size(77, 25);
             this.lblFilePath.TabIndex = 4;
@@ -82,24 +87,24 @@ namespace CDM_Generator
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 123);
+            this.label1.Location = new System.Drawing.Point(15, 144);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(103, 25);
+            this.label1.Size = new System.Drawing.Size(114, 25);
             this.label1.TabIndex = 5;
-            this.label1.Text = "File Preview";
+            this.label1.Text = "Data Preview";
             // 
             // txtCDMJson
             // 
-            this.txtCDMJson.Location = new System.Drawing.Point(135, 370);
+            this.txtCDMJson.Location = new System.Drawing.Point(134, 391);
             this.txtCDMJson.Name = "txtCDMJson";
-            this.txtCDMJson.Size = new System.Drawing.Size(497, 356);
+            this.txtCDMJson.Size = new System.Drawing.Size(497, 358);
             this.txtCDMJson.TabIndex = 6;
             this.txtCDMJson.Text = "";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 370);
+            this.label2.Location = new System.Drawing.Point(15, 391);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(100, 25);
             this.label2.TabIndex = 7;
@@ -108,7 +113,7 @@ namespace CDM_Generator
             // dataGridView
             // 
             this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView.Location = new System.Drawing.Point(135, 123);
+            this.dataGridView.Location = new System.Drawing.Point(135, 144);
             this.dataGridView.Name = "dataGridView";
             this.dataGridView.RowHeadersWidth = 62;
             this.dataGridView.RowTemplate.Height = 33;
@@ -117,7 +122,7 @@ namespace CDM_Generator
             // 
             // btnLoadFile
             // 
-            this.btnLoadFile.Location = new System.Drawing.Point(654, 336);
+            this.btnLoadFile.Location = new System.Drawing.Point(653, 335);
             this.btnLoadFile.Name = "btnLoadFile";
             this.btnLoadFile.Size = new System.Drawing.Size(125, 34);
             this.btnLoadFile.TabIndex = 9;
@@ -128,7 +133,7 @@ namespace CDM_Generator
             // lblEntityName
             // 
             this.lblEntityName.AutoSize = true;
-            this.lblEntityName.Location = new System.Drawing.Point(15, 76);
+            this.lblEntityName.Location = new System.Drawing.Point(15, 97);
             this.lblEntityName.Name = "lblEntityName";
             this.lblEntityName.Size = new System.Drawing.Size(108, 25);
             this.lblEntityName.TabIndex = 11;
@@ -136,16 +141,54 @@ namespace CDM_Generator
             // 
             // txtEntityName
             // 
-            this.txtEntityName.Location = new System.Drawing.Point(134, 76);
+            this.txtEntityName.Location = new System.Drawing.Point(134, 97);
             this.txtEntityName.Name = "txtEntityName";
             this.txtEntityName.Size = new System.Drawing.Size(497, 31);
             this.txtEntityName.TabIndex = 10;
+            // 
+            // btnCopy
+            // 
+            this.btnCopy.Location = new System.Drawing.Point(654, 675);
+            this.btnCopy.Name = "btnCopy";
+            this.btnCopy.Size = new System.Drawing.Size(125, 34);
+            this.btnCopy.TabIndex = 12;
+            this.btnCopy.Text = "Copy CDM";
+            this.btnCopy.UseVisualStyleBackColor = true;
+            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(800, 33);
+            this.menuStrip1.TabIndex = 14;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem1});
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(92, 29);
+            this.optionsToolStripMenuItem.Text = "Settings";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+            // 
+            // optionsToolStripMenuItem1
+            // 
+            this.optionsToolStripMenuItem1.Name = "optionsToolStripMenuItem1";
+            this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(178, 34);
+            this.optionsToolStripMenuItem1.Text = "Options";
+            this.optionsToolStripMenuItem1.Click += new System.EventHandler(this.optionsToolStripMenuItem1_Click);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 761);
+            this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.lblEntityName);
             this.Controls.Add(this.txtEntityName);
             this.Controls.Add(this.btnLoadFile);
@@ -157,11 +200,14 @@ namespace CDM_Generator
             this.Controls.Add(this.btnSelectFile);
             this.Controls.Add(this.txtFilePath);
             this.Controls.Add(this.btnJSON);
+            this.Controls.Add(this.menuStrip1);
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CDM Generator";
             this.Load += new System.EventHandler(this.Main_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -180,6 +226,10 @@ namespace CDM_Generator
         private System.Windows.Forms.Button btnLoadFile;
         private System.Windows.Forms.Label lblEntityName;
         private System.Windows.Forms.TextBox txtEntityName;
+        private System.Windows.Forms.Button btnCopy;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem1;
     }
 }
 

@@ -15,6 +15,9 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using Parquet.Data;
 using Parquet;
+using System.Collections;
+using System.Collections.Specialized;
+
 using DataColumn = System.Data.DataColumn;
 
 namespace CDM_Generator
@@ -60,11 +63,18 @@ namespace CDM_Generator
             }
         }
 
-        private void LoadCSVOnDataGridView(string fileName)
+        private void LoadCSVOnDataGridView(string fileName, bool loadData, bool tryDataTypes)
         {
             try
             {
                 ReadCSV csv = new ReadCSV(fileName);
+                int maxRowCounter = 50;
+                int rowCounter = 0;
+                string dataType = "string";
+                DateTime DTresult;
+                int Intresult;
+                Decimal Decresult;
+                bool failedParse = false;
 
                 if (dataGridView.Columns.Count > 0)
                 {
@@ -80,15 +90,66 @@ namespace CDM_Generator
                 //add a second row and populate with data type
                 DataRow dataRow = fileStructure.NewRow();
 
-                for (int k = 0; k < csv.readCSV.Columns.Count; k++)
+                //if the try data types flag is set to true
+                //go through some of the values and see if there is a the data is date, int, or decimal
+
+                foreach(DataColumn col in csv.readCSV.Columns)
                 {
-                    dataRow[k] = "string";
+                    if (tryDataTypes)
+                    {
+                        if (csv.readCSV.Rows.Count < maxRowCounter)
+                            maxRowCounter = csv.readCSV.Rows.Count;
+
+                        //loop through a few of the values in the column to see what the data type
+                        //could be
+
+                       foreach(DataRow row in csv.readCSV.Rows)
+                       {
+                            if (rowCounter == maxRowCounter)
+                            {
+                                break;
+                            }
+                            //get the value to check
+                            if (row[col] != null)
+                            {
+                                //check for the dates
+                                if (Int32.TryParse(row[col].ToString(), out Intresult) && failedParse == false)
+                                {
+                                    dataType = "int32";
+                                }
+                                else if (Decimal.TryParse(row[col].ToString(), out Decresult) && failedParse == false)
+                                {
+                                    dataType = "decimal";
+                                }
+                                else if (DateTime.TryParse(row[col].ToString(), out DTresult) && failedParse == false)
+                                {
+                                    dataType = "dateTime";
+                                }
+                                else
+                                {
+                                    failedParse = true;
+                                    dataType = "string";
+                                }
+                            }
+                            rowCounter++;
+                            
+                        }
+                        dataRow[col.Ordinal] = dataType;
+                        
+                        //reset
+                        failedParse = false;
+                        dataType = "string";
+                    }
+                    else
+                        dataRow[col.Ordinal] = dataType; 
                 }
+                
                 fileStructure.Rows.Add(dataRow);
 
                 try
                 {
-                    dataGridView.DataSource = csv.readCSV;
+                    if (loadData)
+                        dataGridView.DataSource = csv.readCSV;
                 }
                 catch (Exception ex)
                 {
@@ -101,11 +162,12 @@ namespace CDM_Generator
             }
         }
 
-        private void LoadParquetOnDataGridView(string fileName)
+        private void LoadParquetOnDataGridView(string fileName, bool loadData)
         {
             try
             {
-                dataGridView.DataSource = ReadParquet(fileName);
+                if (loadData)
+                    dataGridView.DataSource = ReadParquet(fileName);
             }
             catch (Exception ex)
             {
@@ -115,6 +177,7 @@ namespace CDM_Generator
 
         private class ReadCSV
         {
+            
             public DataTable readCSV;
 
             public ReadCSV(string fileName, bool firstRowContainsFieldNames = true)
@@ -124,6 +187,9 @@ namespace CDM_Generator
 
             private static DataTable GenerateDataTable(string fileName, bool firstRowContainsFieldNames = true)
             {
+                // get the key
+                bool alphaColumnNames = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings.Get("AttributeNames").ToString());
+
                 DataTable result = new DataTable();
 
                 if (fileName == "")
@@ -154,7 +220,9 @@ namespace CDM_Generator
                             if (firstRowContainsFieldNames)
                             {
                                 //remove any special characters from the column names
-                                columnName = Regex.Replace(fields[i], @"[^0-9a-zA-Z]+", "");
+                                if (alphaColumnNames)
+                                    columnName = Regex.Replace(fields[i], @"[^0-9a-zA-Z]+", "");
+
                                 result.Columns.Add(columnName);
                             }
                             else
@@ -258,20 +326,13 @@ namespace CDM_Generator
                                     Array data = cols.Data;
                                     try
                                     {
-                                        if (data != null)
+                                        if (data.GetValue(k) != null)
                                         {
-                                            if (cols.Field.DataType == DataType.DateTimeOffset)
-                                            {
-                                                //DateTimeOffset[]value = (DateTimeOffset[])data;
-                                                array[k] = null;
-                                            }
-                                            else
-                                            {
-                                                string[] value = (string[])data;
-                                                if (value[k] != null)
-                                                    array[k] = value[k].ToString();
-                                            }
-                                            
+                                            array[k] = data.GetValue(k).ToString();
+                                        }
+                                        else
+                                        {
+                                            array[k] = null;
                                         }
                                     }
                                     catch(Exception ex)
@@ -293,19 +354,44 @@ namespace CDM_Generator
 
         private void btnLoadFile_Click(object sender, EventArgs e)
         {
-           
+
+            bool loadData = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings.Get("PreviewData").ToString());
+            bool tryDataTypes = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings.Get("DataTypes").ToString());
+
             if (txtFilePath.Text.Length > 0)
             {
-                if (fileExtension == "csv")
+                try
                 { 
-                    LoadCSVOnDataGridView(txtFilePath.Text);
+
+                    
+                    //change the cursor to waiting while the data is loaded
+                    Cursor curWait = Cursors.WaitCursor;
+             
+                    this.Cursor = curWait;
+
+                    if (fileExtension == "csv")
+                    { 
+                        LoadCSVOnDataGridView(txtFilePath.Text, loadData, tryDataTypes);
+                    }
+                    if (fileExtension == "parquet")
+                    {
+                        LoadParquetOnDataGridView(txtFilePath.Text, loadData);
+                    }
+                    //generate the JSON
+                    txtCDMJson.Text = GenerateJSONCDM();
+
+                
                 }
-                if (fileExtension == "parquet")
+                catch (Exception ex)
                 {
-                    LoadParquetOnDataGridView(txtFilePath.Text);
+                    MessageBox.Show("An error has occurred: " + ex.Message);
+
                 }
-                //generate the JSON
-                txtCDMJson.Text = GenerateJSONCDM();
+                finally
+                {
+                    Cursor curDefault = Cursors.Default;
+                    this.Cursor = curDefault;
+                }
             }
             else
             {
@@ -397,5 +483,21 @@ namespace CDM_Generator
 
         }
 
+        private void btnCopy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(txtCDMJson.Text);
+            MessageBox.Show("CDM Copied to Clipboard!");
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void optionsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            frmSettings settings = new frmSettings();
+            settings.Show();
+        }
     }
 }
