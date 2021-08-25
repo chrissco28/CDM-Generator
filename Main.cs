@@ -499,5 +499,12 @@ namespace CDM_Generator
             frmSettings settings = new frmSettings();
             settings.Show();
         }
+
+        private void btnManifest_Click(object sender, EventArgs e)
+        {
+            frmManifest frmManifest = new frmManifest();
+            frmManifest.Show();
+
+        }
     }
 }

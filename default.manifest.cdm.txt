@@ -12,7 +12,7 @@
           "regularExpression": "{2}",
           "parameters": [],
           "exhibitsTraits": [
-            "is.partition.format.parquet"
+            {3}
           ]
         }
       ],

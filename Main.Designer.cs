@@ -44,17 +44,18 @@ namespace CDM_Generator
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnManifest = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnJSON
             // 
-            this.btnJSON.Location = new System.Drawing.Point(653, 715);
+            this.btnJSON.Location = new System.Drawing.Point(506, 736);
             this.btnJSON.Name = "btnJSON";
             this.btnJSON.Size = new System.Drawing.Size(125, 34);
             this.btnJSON.TabIndex = 0;
-            this.btnJSON.Text = "Save CDM";
+            this.btnJSON.Text = "Save";
             this.btnJSON.UseVisualStyleBackColor = true;
             this.btnJSON.Click += new System.EventHandler(this.btnJSON_Click);
             // 
@@ -62,12 +63,12 @@ namespace CDM_Generator
             // 
             this.txtFilePath.Location = new System.Drawing.Point(134, 42);
             this.txtFilePath.Name = "txtFilePath";
-            this.txtFilePath.Size = new System.Drawing.Size(497, 31);
+            this.txtFilePath.Size = new System.Drawing.Size(357, 31);
             this.txtFilePath.TabIndex = 2;
             // 
             // btnSelectFile
             // 
-            this.btnSelectFile.Location = new System.Drawing.Point(653, 40);
+            this.btnSelectFile.Location = new System.Drawing.Point(506, 42);
             this.btnSelectFile.Name = "btnSelectFile";
             this.btnSelectFile.Size = new System.Drawing.Size(125, 34);
             this.btnSelectFile.TabIndex = 3;
@@ -78,7 +79,7 @@ namespace CDM_Generator
             // lblFilePath
             // 
             this.lblFilePath.AutoSize = true;
-            this.lblFilePath.Location = new System.Drawing.Point(15, 42);
+            this.lblFilePath.Location = new System.Drawing.Point(7, 42);
             this.lblFilePath.Name = "lblFilePath";
             this.lblFilePath.Size = new System.Drawing.Size(77, 25);
             this.lblFilePath.TabIndex = 4;
@@ -87,7 +88,7 @@ namespace CDM_Generator
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 144);
+            this.label1.Location = new System.Drawing.Point(7, 144);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(114, 25);
             this.label1.TabIndex = 5;
@@ -95,16 +96,16 @@ namespace CDM_Generator
             // 
             // txtCDMJson
             // 
-            this.txtCDMJson.Location = new System.Drawing.Point(134, 391);
+            this.txtCDMJson.Location = new System.Drawing.Point(135, 442);
             this.txtCDMJson.Name = "txtCDMJson";
-            this.txtCDMJson.Size = new System.Drawing.Size(497, 358);
+            this.txtCDMJson.Size = new System.Drawing.Size(497, 262);
             this.txtCDMJson.TabIndex = 6;
             this.txtCDMJson.Text = "";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 391);
+            this.label2.Location = new System.Drawing.Point(8, 442);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(100, 25);
             this.label2.TabIndex = 7;
@@ -122,7 +123,7 @@ namespace CDM_Generator
             // 
             // btnLoadFile
             // 
-            this.btnLoadFile.Location = new System.Drawing.Point(653, 335);
+            this.btnLoadFile.Location = new System.Drawing.Point(506, 389);
             this.btnLoadFile.Name = "btnLoadFile";
             this.btnLoadFile.Size = new System.Drawing.Size(125, 34);
             this.btnLoadFile.TabIndex = 9;
@@ -133,7 +134,7 @@ namespace CDM_Generator
             // lblEntityName
             // 
             this.lblEntityName.AutoSize = true;
-            this.lblEntityName.Location = new System.Drawing.Point(15, 97);
+            this.lblEntityName.Location = new System.Drawing.Point(7, 97);
             this.lblEntityName.Name = "lblEntityName";
             this.lblEntityName.Size = new System.Drawing.Size(108, 25);
             this.lblEntityName.TabIndex = 11;
@@ -148,11 +149,11 @@ namespace CDM_Generator
             // 
             // btnCopy
             // 
-            this.btnCopy.Location = new System.Drawing.Point(654, 675);
+            this.btnCopy.Location = new System.Drawing.Point(375, 736);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(125, 34);
             this.btnCopy.TabIndex = 12;
-            this.btnCopy.Text = "Copy CDM";
+            this.btnCopy.Text = "Copy";
             this.btnCopy.UseVisualStyleBackColor = true;
             this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
@@ -163,7 +164,7 @@ namespace CDM_Generator
             this.optionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 33);
+            this.menuStrip1.Size = new System.Drawing.Size(657, 33);
             this.menuStrip1.TabIndex = 14;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -183,11 +184,22 @@ namespace CDM_Generator
             this.optionsToolStripMenuItem1.Text = "Options";
             this.optionsToolStripMenuItem1.Click += new System.EventHandler(this.optionsToolStripMenuItem1_Click);
             // 
+            // btnManifest
+            // 
+            this.btnManifest.Location = new System.Drawing.Point(135, 736);
+            this.btnManifest.Name = "btnManifest";
+            this.btnManifest.Size = new System.Drawing.Size(112, 34);
+            this.btnManifest.TabIndex = 15;
+            this.btnManifest.Text = "Manifest";
+            this.btnManifest.UseVisualStyleBackColor = true;
+            this.btnManifest.Click += new System.EventHandler(this.btnManifest_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 761);
+            this.ClientSize = new System.Drawing.Size(657, 780);
+            this.Controls.Add(this.btnManifest);
             this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.lblEntityName);
             this.Controls.Add(this.txtEntityName);
@@ -230,6 +242,7 @@ namespace CDM_Generator
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem1;
+        private System.Windows.Forms.Button btnManifest;
     }
 }
 
