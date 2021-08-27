@@ -102,6 +102,7 @@ namespace CDM_Generator
             this.lblEntityName.Size = new System.Drawing.Size(126, 25);
             this.lblEntityName.TabIndex = 30;
             this.lblEntityName.Text = "Entity Name(s)";
+            this.lblEntityName.Click += new System.EventHandler(this.lblEntityName_Click);
             // 
             // txtEntityName
             // 
@@ -111,6 +112,7 @@ namespace CDM_Generator
             this.txtEntityName.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtEntityName.Size = new System.Drawing.Size(511, 91);
             this.txtEntityName.TabIndex = 29;
+            this.txtEntityName.TextChanged += new System.EventHandler(this.txtEntityName_TextChanged);
             // 
             // btnSelectFiles
             // 

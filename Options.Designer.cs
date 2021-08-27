@@ -84,7 +84,7 @@ namespace CDM_Generator
             // 
             // btnOkay
             // 
-            this.btnOkay.Location = new System.Drawing.Point(245, 141);
+            this.btnOkay.Location = new System.Drawing.Point(263, 141);
             this.btnOkay.Name = "btnOkay";
             this.btnOkay.Size = new System.Drawing.Size(112, 34);
             this.btnOkay.TabIndex = 19;

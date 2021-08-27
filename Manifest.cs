@@ -148,5 +148,15 @@ namespace CDM_Generator
             Clipboard.SetText(richDefaultManifest.Text);
             MessageBox.Show("Manifest Copied to Clipboard!");
         }
+
+        private void txtEntityName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblEntityName_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
