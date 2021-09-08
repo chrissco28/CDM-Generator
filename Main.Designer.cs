@@ -44,6 +44,7 @@ namespace CDM_Generator
             this.richDefaultManifest = new System.Windows.Forms.RichTextBox();
             this.btnPreviewData = new System.Windows.Forms.Button();
             this.btnCDM = new System.Windows.Forms.Button();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridEntities)).BeginInit();
@@ -97,6 +98,9 @@ namespace CDM_Generator
             // 
             // dataGridView
             // 
+            this.dataGridView.AllowUserToOrderColumns = true;
+            this.dataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
+            this.dataGridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView.Location = new System.Drawing.Point(135, 260);
             this.dataGridView.Name = "dataGridView";
@@ -124,6 +128,7 @@ namespace CDM_Generator
             this.menuStrip1.Size = new System.Drawing.Size(952, 33);
             this.menuStrip1.TabIndex = 14;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // optionsToolStripMenuItem
             // 
@@ -142,6 +147,9 @@ namespace CDM_Generator
             // 
             // gridEntities
             // 
+            this.gridEntities.AllowUserToOrderColumns = true;
+            this.gridEntities.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.gridEntities.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.gridEntities.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridEntities.Location = new System.Drawing.Point(135, 36);
             this.gridEntities.MultiSelect = false;
@@ -188,6 +196,10 @@ namespace CDM_Generator
             this.btnCDM.Text = "Generate CDM";
             this.btnCDM.UseVisualStyleBackColor = true;
             this.btnCDM.Click += new System.EventHandler(this.btnCDM_Click);
+            // 
+            // folderBrowserDialog
+            // 
+            this.folderBrowserDialog.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             // 
             // Main
             // 
@@ -237,6 +249,7 @@ namespace CDM_Generator
         private System.Windows.Forms.RichTextBox richDefaultManifest;
         private System.Windows.Forms.Button btnPreviewData;
         private System.Windows.Forms.Button btnCDM;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
     }
 }
 

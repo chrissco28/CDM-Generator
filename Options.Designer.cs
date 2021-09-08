@@ -30,7 +30,6 @@ namespace CDM_Generator
         private void InitializeComponent()
         {
             this.chkAlphaColumns = new System.Windows.Forms.CheckBox();
-            this.chkEnableDataPreview = new System.Windows.Forms.CheckBox();
             this.chkDataTypes = new System.Windows.Forms.CheckBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOkay = new System.Windows.Forms.Button();
@@ -47,18 +46,6 @@ namespace CDM_Generator
             this.chkAlphaColumns.TabIndex = 14;
             this.chkAlphaColumns.Text = "Alphanumeric Attributes (CSV only)";
             this.chkAlphaColumns.UseVisualStyleBackColor = true;
-            // 
-            // chkEnableDataPreview
-            // 
-            this.chkEnableDataPreview.AutoSize = true;
-            this.chkEnableDataPreview.Checked = true;
-            this.chkEnableDataPreview.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkEnableDataPreview.Location = new System.Drawing.Point(375, 29);
-            this.chkEnableDataPreview.Name = "chkEnableDataPreview";
-            this.chkEnableDataPreview.Size = new System.Drawing.Size(140, 29);
-            this.chkEnableDataPreview.TabIndex = 16;
-            this.chkEnableDataPreview.Text = "Preview Data";
-            this.chkEnableDataPreview.UseVisualStyleBackColor = true;
             // 
             // chkDataTypes
             // 
@@ -100,7 +87,6 @@ namespace CDM_Generator
             this.Controls.Add(this.btnOkay);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.chkDataTypes);
-            this.Controls.Add(this.chkEnableDataPreview);
             this.Controls.Add(this.chkAlphaColumns);
             this.Name = "frmSettings";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -114,7 +100,6 @@ namespace CDM_Generator
         #endregion
 
         private System.Windows.Forms.CheckBox chkAlphaColumns;
-        private System.Windows.Forms.CheckBox chkEnableDataPreview;
         private System.Windows.Forms.CheckBox chkDataTypes;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnOkay;

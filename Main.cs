@@ -51,10 +51,16 @@ namespace CDM_Generator
             gridEntities.Columns.Add("Regex", "Regex");
             gridEntities.Columns.Add("FilePath", "File Path");
 
+            DataGridViewCheckBoxColumn colHeaders = new DataGridViewCheckBoxColumn();
+            {
+                colHeaders.HeaderText = "Has Headers";
+                colHeaders.Name = "ColumnHeaders";
+            }
+            gridEntities.Columns.Add(colHeaders);
+
             gridEntities.Columns[0].ReadOnly = true;
             gridEntities.Columns[1].ReadOnly = true;
             gridEntities.Columns[5].ReadOnly = true;
-
         }
 
         private void SelectFiles()
@@ -71,12 +77,13 @@ namespace CDM_Generator
                 openFileDialog.FilterIndex = 2;
                 openFileDialog.RestoreDirectory = true;
                 string regex = string.Empty;
-
-                //clear the grid
-                this.gridEntities.Rows.Clear();
+                bool hasHeaders = true;
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
+                    //clear the grid
+                    this.gridEntities.Rows.Clear();
+
                     //get the file names selected
                     for (int i=0; i< openFileDialog.FileNames.Length; i++)
                     {
@@ -85,7 +92,7 @@ namespace CDM_Generator
                         fullFileName = openFileDialog.FileNames[i].ToString();
 
                         regex = @".+\\." + GetFileExtension(fileName) + "$";
-                        this.gridEntities.Rows.Add(GetFileName(fileName), GetFileExtension(fileName), GetFileName(fileName), GetFileName(fileName), regex, fullFileName);
+                        this.gridEntities.Rows.Add(GetFileName(fileName), GetFileExtension(fileName), GetFileName(fileName), GetFileName(fileName), regex, fullFileName, hasHeaders);
                     }
                 }
             }
@@ -104,9 +111,10 @@ namespace CDM_Generator
                 Decimal Decresult;
                 bool failedParse = false;
 
-                if (dataGridView.Columns.Count > 0)
+                if (fileStructure.Columns.Count > 0)
                 {
-                    ClearTables();
+                    fileStructure.Rows.Clear();
+                    fileStructure.Columns.Clear();
                 }
 
                 //get the first row of the results to get the file structure
@@ -401,7 +409,15 @@ namespace CDM_Generator
                     this.Cursor = curWait;
 
                     if (fileExtension == "csv")
-                    { 
+                    {
+
+                        if (dataGridView.Columns.Count > 0)
+                        {
+                            dataGridView.DataSource = null;
+                            dataGridView.Rows.Clear();
+                            dataGridView.Columns.Clear();
+                        }
+
                         LoadCSVStructureData(filePath, loadData, tryDataTypes);
                     }
                     if (fileExtension == "parquet")
@@ -478,20 +494,22 @@ namespace CDM_Generator
 
         private void btnJSON_Click(object sender, EventArgs e)
         {
-            PreviewSaveCDM(true);
+
+            //get the file path
+            DialogResult result = this.folderBrowserDialog.ShowDialog();
+            
+            PreviewSaveCDM(true, folderBrowserDialog.SelectedPath);
         }
 
-        private void saveFile(string fileName, string content)
+        private void saveFile(string fileName, string content, string location)
         {
-            try 
-            {
-                string filePath = Directory.GetCurrentDirectory().ToString();
-                System.IO.File.WriteAllText(fileName, content);
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show("There was an exception saving the file:"+ ex.Message,"Exception");
-            }
+            if (location.Length == 0)
+                location = Directory.GetCurrentDirectory().ToString();
+
+            string fullFilePath = location + @"\" + fileName;
+
+            System.IO.File.WriteAllText(fullFilePath, content);
+            
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -499,12 +517,6 @@ namespace CDM_Generator
             this.Text = "CDM Generator (" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + ")";
         }
 
-        private void ClearTables()
-        {
-            fileStructure.Rows.Clear();
-            fileStructure.Columns.Clear();
-
-        }
 
         private void optionsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -545,7 +557,7 @@ namespace CDM_Generator
 
         private void btnCDM_Click(object sender, EventArgs e)
         {
-            PreviewSaveCDM(false);
+            PreviewSaveCDM(false, string.Empty);
         }
 
 
@@ -558,11 +570,12 @@ namespace CDM_Generator
             string entityName = string.Empty;
             string rootLocation = string.Empty;
             string regEx = string.Empty;
+            string hasHeaders = string.Empty;
 
             entityManifest.Append("{'manifestName': 'default','entities': [");
          
             //verify the files are loaded
-            if (dataGridView.Rows.Count == 0)
+            if (gridEntities.Rows.Count == 0)
             {
                 MessageBox.Show("Please select one or more files.", "CDM Generator");
                 return string.Empty;
@@ -575,19 +588,29 @@ namespace CDM_Generator
                     entityName = row.Cells[2].Value.ToString();
                     fileExtension = row.Cells[1].Value.ToString();
 
+
                     if (row.Cells[3].Value !=null)
                         rootLocation = row.Cells[3].Value.ToString();
                     if (row.Cells[4].Value != null)
                         regEx = @row.Cells[4].Value.ToString();
+                    if (row.Cells[6].Value != null)
+                        hasHeaders = @row.Cells[6].Value.ToString().ToLower();
 
                     if (entityName.Length > 0)
                     {
                         
-                        if (fileExtension == "parquet")
-                            trait = "'is.partition.format.parquet'";
+                        if (fileExtension.ToLower() == "parquet")
+                        { 
+                            trait = "'traitReference': 'is.partition.format.parquet'";
+                        }
+                        if (fileExtension.ToLower() == "csv")
+                        {
+                            trait = "'traitReference': 'is.partition.format.CSV', ";
+                            trait = trait + "'arguments': [{'name': 'columnHeaders','value': '" + hasHeaders + "', 'name': 'delimiter','value': ','}]";
+                        }
 
                         entityManifest.Append("{'type': 'LocalEntity','entityName': '" + entityName + "','entityPath': 'resolved/" + entityName + ".cdm.json/" + entityName + "',");
-                        entityManifest.Append("'dataPartitionPatterns': [{ 'name': '" + entityName + "Partitions','rootLocation': '" + rootLocation + "','regularExpression': '" + regEx + "','parameters': [],'exhibitsTraits': [" + trait + "]}]");
+                        entityManifest.Append("'dataPartitionPatterns': [{ 'name': '" + entityName + "Partitions','rootLocation': '" + rootLocation + "','regularExpression': '" + regEx + "','parameters': [],'exhibitsTraits': [{" + trait + "}]}]");
                         entityManifest.Append(",'definitions': [{'traitName': 'is.formatted','extendsTrait': 'is'},");
                         entityManifest.Append("{'traitName': 'is.formatted.dateTime','extendsTrait': 'is.formatted',");
                         entityManifest.Append("'hasParameters': [{'name': 'format','dataType': 'stringFormat','defaultValue': 'YYYY-MM-DDThh:mmZ'}]},");
@@ -609,6 +632,7 @@ namespace CDM_Generator
             {
                 var options = new JsonSerializerOptions()
                 {
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                     WriteIndented = true
                 };
 
@@ -622,7 +646,7 @@ namespace CDM_Generator
             }
         }
 
-        private void PreviewSaveCDM(bool save)
+        private void PreviewSaveCDM(bool save, string location)
         {
             StringBuilder sb = new StringBuilder();
             string entityName;
@@ -630,11 +654,12 @@ namespace CDM_Generator
             string fileExtension;
             string cdmName;
             string JSON;
-
+            bool exception = false;
+           
             //verify the files are loaded
-            if (dataGridView.Rows.Count == 0)
+            if (gridEntities.Rows.Count == 0)
             {
-                MessageBox.Show("Please select one or more files.", "CDM Generator");
+                MessageBox.Show("Please select one or more files", "CDM Generator");
                 return;
             }
 
@@ -649,7 +674,7 @@ namespace CDM_Generator
 
                     if (fileExtension == "csv")
                     {
-                        LoadCSVStructureData(fullFilePath, false, true);
+                        LoadCSVStructureData(fullFilePath, true, true);
                     }
                     if (fileExtension == "parquet")
                     {
@@ -666,12 +691,17 @@ namespace CDM_Generator
 
                     if (save)
                     {
-                        cdmName = entityName + ".cdm.json";
-                        saveFile(cdmName, JSON);
+                        try
+                        { 
+                            cdmName = entityName + ".cdm.json";
+                            saveFile(cdmName, JSON, location);
+                        }
+                        catch(Exception ex)
+                        {
+                            exception = true;
+                            MessageBox.Show("There was an exception saving the manifest file for " + entityName + "file: " + ex.Message, "CDM Generator");
+                        }
                     }
-                    
-                    
-                    
                 }
             }
             txtCDMJson.Text = sb.ToString();
@@ -679,10 +709,24 @@ namespace CDM_Generator
             //generate the default manifest content
             if (save)
             {
-                cdmName = "default.manifest.cdm.json";
-                saveFile(cdmName, richDefaultManifest.Text);
-                MessageBox.Show("The files have been saved to: " + Directory.GetCurrentDirectory().ToString());
+                try
+                {
+                    cdmName = "default.manifest.cdm.json";
+                    saveFile(cdmName, richDefaultManifest.Text, location);
+
+                    if (exception == false)
+                        MessageBox.Show("The files have been saved.", "CDM Generator");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("There was an exception saving the default manifest file: " + ex.Message, "CDM Generator");
+                }
             }
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }
