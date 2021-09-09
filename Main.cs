@@ -131,6 +131,8 @@ namespace CDM_Generator
 
                 foreach(DataColumn col in csv.readCSV.Columns)
                 {
+                    //reset the row counter
+                    rowCounter = 0;
                     if (tryDataTypes)
                     {
                         if (csv.readCSV.Rows.Count < maxRowCounter)
@@ -497,8 +499,26 @@ namespace CDM_Generator
 
             //get the file path
             DialogResult result = this.folderBrowserDialog.ShowDialog();
-            
-            PreviewSaveCDM(true, folderBrowserDialog.SelectedPath);
+
+            try
+            {
+                //change the cursor to waiting while the data is loaded
+                Cursor curWait = Cursors.WaitCursor;
+
+                this.Cursor = curWait;
+                PreviewSaveCDM(true, folderBrowserDialog.SelectedPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error has occurred: " + ex.Message);
+
+            }
+            finally
+            {
+                Cursor curDefault = Cursors.Default;
+                this.Cursor = curDefault;
+            }
+           
         }
 
         private void saveFile(string fileName, string content, string location)
@@ -557,7 +577,25 @@ namespace CDM_Generator
 
         private void btnCDM_Click(object sender, EventArgs e)
         {
+            try
+            { 
+            //change the cursor to waiting while the data is loaded
+            Cursor curWait = Cursors.WaitCursor;
+
+            this.Cursor = curWait;
             PreviewSaveCDM(false, string.Empty);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error has occurred: " + ex.Message);
+
+            }
+            finally
+            {
+                Cursor curDefault = Cursors.Default;
+                this.Cursor = curDefault;
+            }
         }
 
 

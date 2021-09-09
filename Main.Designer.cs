@@ -73,7 +73,7 @@ namespace CDM_Generator
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 260);
+            this.label1.Location = new System.Drawing.Point(15, 260);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(114, 25);
             this.label1.TabIndex = 5;
@@ -90,7 +90,7 @@ namespace CDM_Generator
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 665);
+            this.label2.Location = new System.Drawing.Point(12, 665);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(104, 25);
             this.label2.TabIndex = 7;
@@ -163,7 +163,7 @@ namespace CDM_Generator
             // lblManifest
             // 
             this.lblManifest.AutoSize = true;
-            this.lblManifest.Location = new System.Drawing.Point(12, 490);
+            this.lblManifest.Location = new System.Drawing.Point(12, 478);
             this.lblManifest.Name = "lblManifest";
             this.lblManifest.Size = new System.Drawing.Size(80, 25);
             this.lblManifest.TabIndex = 28;
