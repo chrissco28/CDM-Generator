@@ -644,7 +644,7 @@ namespace CDM_Generator
                         if (fileExtension.ToLower() == "csv")
                         {
                             trait = "'traitReference': 'is.partition.format.CSV', ";
-                            trait = trait + "'arguments': [{'name': 'columnHeaders','value': '" + hasHeaders + "', 'name': 'delimiter','value': ','}]";
+                            trait = trait + "'arguments': [{'name': 'columnHeaders','value': '" + hasHeaders + "'},{'name': 'delimiter','value': ','}]";
                         }
 
                         entityManifest.Append("{'type': 'LocalEntity','entityName': '" + entityName + "','entityPath': 'resolved/" + entityName + ".cdm.json/" + entityName + "',");
