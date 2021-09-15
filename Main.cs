@@ -456,7 +456,7 @@ namespace CDM_Generator
             int i = 0;
             string columnName = string.Empty;
             string dataType = string.Empty;
-            
+
            
             //get the header rows from the data grid and append them to the JSON
             while(i < fileStructure.Columns.Count)
@@ -527,6 +527,11 @@ namespace CDM_Generator
                 location = Directory.GetCurrentDirectory().ToString();
 
             string fullFilePath = location + @"\" + fileName;
+            
+            if (!System.IO.Directory.Exists(location))
+            {
+                System.IO.Directory.CreateDirectory(location);
+            }
 
             System.IO.File.WriteAllText(fullFilePath, content);
             
@@ -732,7 +737,12 @@ namespace CDM_Generator
                         try
                         { 
                             cdmName = entityName + ".cdm.json";
-                            saveFile(cdmName, JSON, location);
+
+                            //save the JSON file
+                            saveFile(cdmName, JSON, location + @"\cdmgenerator\manifest");
+
+                            //save the data map file
+                            saveDatamap(entityName, location + @"\cdmgenerator\datamaps");
                         }
                         catch(Exception ex)
                         {
@@ -765,6 +775,30 @@ namespace CDM_Generator
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
+        }
+
+        private void saveDatamap(string entityName, string location)
+        {
+            StringBuilder dataMap = new StringBuilder();
+            int i = 0;
+            string columnName = string.Empty;
+            string dataType = string.Empty;
+            string fileName = entityName + ".csv";
+
+            //start the header of the data map file
+            dataMap.AppendLine("ColumnSequence, ColumnName, DataType");
+
+            //get the header rows from the data grid and append them to the JSON
+            while (i < fileStructure.Columns.Count)
+            {
+                columnName = fileStructure.Columns[i].ColumnName;
+                dataType = fileStructure.Rows[0][i].ToString();
+                dataMap.AppendLine(i.ToString() + "," + columnName + "," + dataType);
+
+                i++;
+            }
+
+            saveFile(fileName, dataMap.ToString(), location);
         }
     }
 }

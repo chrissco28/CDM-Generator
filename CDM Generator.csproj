@@ -5,11 +5,11 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>CDM_Generator</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>3.2</Version>
+    <Version>3.3</Version>
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>cdmgenerator.snk</AssemblyOriginatorKeyFile>
-    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <AssemblyVersion>3.3.0.0</AssemblyVersion>
     <FileVersion>3.2.0.0</FileVersion>
   </PropertyGroup>
 
