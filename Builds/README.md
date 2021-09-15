@@ -9,7 +9,7 @@ Intructions:
 	- The root location is initially the entity name. Updated as needed.
 3) (Optional) For the data preview, select the row within the entity table to preview the data. This is not required to generate the manifest files.
 4) Click on Generate CDM to preview the default and entity manifest files.
-4) Click on Save to save the default and entity manifest files. 
+4) Click on Save to save the default/entity manifest files, and data maps
 
 Settings:
 
