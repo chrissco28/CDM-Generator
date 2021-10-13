@@ -125,7 +125,7 @@ namespace CDM_Generator
             this.optionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(952, 33);
+            this.menuStrip1.Size = new System.Drawing.Size(962, 33);
             this.menuStrip1.TabIndex = 14;
             this.menuStrip1.Text = "menuStrip1";
             this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
@@ -205,7 +205,8 @@ namespace CDM_Generator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(952, 859);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(962, 859);
             this.Controls.Add(this.btnCDM);
             this.Controls.Add(this.btnPreviewData);
             this.Controls.Add(this.lblManifest);

@@ -17,7 +17,7 @@ using Parquet.Data;
 using Parquet;
 using System.Collections;
 using System.Collections.Specialized;
-
+using System.Globalization;
 using DataColumn = System.Data.DataColumn;
 
 namespace CDM_Generator
@@ -98,11 +98,11 @@ namespace CDM_Generator
             }
         }
 
-        private void LoadCSVStructureData(string fileName, bool loadData, bool tryDataTypes)
+        private void LoadCSVStructureData(string fileName, bool loadData, bool tryDataTypes, bool hasHeaders)
         {
             try
             {
-                ReadCSV csv = new ReadCSV(fileName);
+                ReadCSV csv = new ReadCSV(fileName, hasHeaders);
                 int maxRowCounter = 50;
                 int rowCounter = 0;
                 string dataType = "string";
@@ -110,6 +110,7 @@ namespace CDM_Generator
                 int Intresult;
                 Decimal Decresult;
                 bool failedParse = false;
+                string columnName = string.Empty;
 
                 if (fileStructure.Columns.Count > 0)
                 {
@@ -118,11 +119,21 @@ namespace CDM_Generator
                 }
 
                 //get the first row of the results to get the file structure
+                //if the first row does not contain the column then give generic column name
                 for (int i = 0; i < csv.readCSV.Columns.Count; i++)
                 {
-                    System.Data.DataColumn col = new System.Data.DataColumn(csv.readCSV.Columns[i].ColumnName, typeof(string));
+                    if (hasHeaders)
+                    {
+                        columnName = csv.readCSV.Columns[i].ColumnName;
+                    }
+                    else
+                    {
+                        columnName = "Column" + i.ToString();
+                    }
+                    System.Data.DataColumn col = new System.Data.DataColumn(columnName, typeof(string));
                     fileStructure.Columns.Add(col);
                 }
+                
                 //add a second row and populate with data type
                 DataRow dataRow = fileStructure.NewRow();
 
@@ -220,12 +231,12 @@ namespace CDM_Generator
             
             public DataTable readCSV;
 
-            public ReadCSV(string fileName, bool firstRowContainsFieldNames = true)
+            public ReadCSV(string fileName, bool firstRowContainsFieldNames)
             {
                 readCSV = GenerateDataTable(fileName, firstRowContainsFieldNames);
             }
 
-            private static DataTable GenerateDataTable(string fileName, bool firstRowContainsFieldNames = true)
+            private static DataTable GenerateDataTable(string fileName, bool firstRowContainsFieldNames)
             {
                 // get the key
                 bool alphaColumnNames = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings.Get("AttributeNames").ToString());
@@ -267,7 +278,7 @@ namespace CDM_Generator
                             }
                             else
                             {
-                                result.Columns.Add("Col" + i);
+                                result.Columns.Add("Column" + i);
                             }
                         }
 
@@ -395,7 +406,7 @@ namespace CDM_Generator
             return results;
         }
 
-        private void PreviewData(string filePath, string fileExtension)
+        private void PreviewData(string filePath, string fileExtension, bool hasHeaders)
         {
 
             bool loadData = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings.Get("PreviewData").ToString());
@@ -420,7 +431,7 @@ namespace CDM_Generator
                             dataGridView.Columns.Clear();
                         }
 
-                        LoadCSVStructureData(filePath, loadData, tryDataTypes);
+                        LoadCSVStructureData(filePath, loadData, tryDataTypes, hasHeaders);
                     }
                     if (fileExtension == "parquet")
                     {
@@ -573,7 +584,8 @@ namespace CDM_Generator
                
                 string filePath = gridEntities.CurrentRow.Cells["FilePath"].Value.ToString();
                 string fileExtension = gridEntities.CurrentRow.Cells["FileType"].Value.ToString();
-                PreviewData(filePath, fileExtension);
+                string hadHeaders = gridEntities.CurrentRow.Cells["ColumnHeaders"].Value.ToString(); 
+                PreviewData(filePath, fileExtension, Convert.ToBoolean(hadHeaders));
             }
             else
                 MessageBox.Show("Please select a row to preview the data", "CDM Generator");
@@ -614,6 +626,7 @@ namespace CDM_Generator
             string rootLocation = string.Empty;
             string regEx = string.Empty;
             string hasHeaders = string.Empty;
+            string columnName = string.Empty;
 
             entityManifest.Append("{'manifestName': 'default','entities': [");
          
@@ -638,7 +651,7 @@ namespace CDM_Generator
                         regEx = @row.Cells[4].Value.ToString();
                     if (row.Cells[6].Value != null)
                         hasHeaders = @row.Cells[6].Value.ToString().ToLower();
-
+                    
                     if (entityName.Length > 0)
                     {
                         
@@ -654,11 +667,12 @@ namespace CDM_Generator
 
                         entityManifest.Append("{'type': 'LocalEntity','entityName': '" + entityName + "','entityPath': 'resolved/" + entityName + ".cdm.json/" + entityName + "',");
                         entityManifest.Append("'dataPartitionPatterns': [{ 'name': '" + entityName + "Partitions','rootLocation': '" + rootLocation + "','regularExpression': '" + regEx + "','parameters': [],'exhibitsTraits': [{" + trait + "}]}]");
+                        entityManifest.Append(",'exhibitsTraits': [{'traitReference': 'is.formatted.dateTime','arguments': [{'name': 'format','value': 'M/d/yyyy H:mm'}]}]"); 
                         entityManifest.Append(",'definitions': [{'traitName': 'is.formatted','extendsTrait': 'is'},");
                         entityManifest.Append("{'traitName': 'is.formatted.dateTime','extendsTrait': 'is.formatted',");
-                        entityManifest.Append("'hasParameters': [{'name': 'format','dataType': 'stringFormat','defaultValue': 'YYYY-MM-DDThh:mmZ'}]},");
+                        entityManifest.Append("'hasParameters': [{'name': 'format','dataType': 'stringFormat','defaultValue': 'M/d/yyyy H:mm'}]},");
                         entityManifest.Append("{'traitName': 'is.formatted.date','extendsTrait': 'is.formatted',");
-                        entityManifest.Append("'hasParameters': [{'name': 'format','dataType': 'stringFormat','defaultValue': 'YYYY-MM-DD'}]},");
+                        entityManifest.Append("'hasParameters': [{'name': 'format','dataType': 'stringFormat','defaultValue': 'M/d/yyyy'}]},");
                         entityManifest.Append("{'traitName': 'is.formatted.time','extendsTrait': 'is.formatted',");
                         entityManifest.Append("'hasParameters': [{'name': 'format','dataType': 'stringFormat','defaultValue': 'hh:mm:ss'}]}]},");
                     }
@@ -698,7 +712,8 @@ namespace CDM_Generator
             string cdmName;
             string JSON;
             bool exception = false;
-           
+            string hasHeaders = string.Empty;
+
             //verify the files are loaded
             if (gridEntities.Rows.Count == 0)
             {
@@ -714,10 +729,11 @@ namespace CDM_Generator
                     fullFilePath = row.Cells[5].Value.ToString();
                     entityName = row.Cells[2].Value.ToString();
                     fileExtension = row.Cells[1].Value.ToString();
+                    hasHeaders = @row.Cells[6].Value.ToString().ToLower();
 
                     if (fileExtension == "csv")
                     {
-                        LoadCSVStructureData(fullFilePath, true, true);
+                        LoadCSVStructureData(fullFilePath, true, true, Convert.ToBoolean(hasHeaders));
                     }
                     if (fileExtension == "parquet")
                     {
@@ -799,6 +815,50 @@ namespace CDM_Generator
             }
 
             saveFile(fileName, dataMap.ToString(), location);
+        }
+
+        private void checkDateFormat(string dateString)
+        {
+
+            CultureInfo enUS = new CultureInfo("en-US");
+            DataTable formats = populateDateFormats();
+
+            DateTime dateValue;
+
+            // Parse date with no style flags.
+            dateString = " 5/01/2009 8:30 AM";
+
+            foreach (DataRow row in formats.Rows)
+            {
+                //go through each known format for dates and times
+                try
+                {
+                    dateValue = DateTime.ParseExact(dateString, "g", enUS, DateTimeStyles.None);
+                }
+                catch (FormatException)
+                {
+                   //not the valid format
+                }
+            }
+        }
+
+        private DataTable populateDateFormats()
+        {
+
+            DataTable formats = new DataTable();
+            formats.Columns.Add("format");
+            formats.Columns.Add("DateTime");
+
+            //          "M/dd/yyyy hh:mm
+            //          MM/dd/yyyy hh:mm
+            //          MM/dd/yyyy hh:mm:ss tt zzz
+            //          MM/dd/yyyy hh:mm:ss tt zzz
+            //          yy/MM/dd
+            //          yyyy-MM-dd
+            //          dd-MMM-yy
+
+            return formats;
+
         }
     }
 }
